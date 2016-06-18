@@ -10,3 +10,6 @@
 /super-diamond-server/target
 
 /super-diamond-client/.springBeans
+/super-diamond.iml
+/super-diamond-server/super-diamond-server.iml
+/super-diamond-client/super-diamond-client.iml

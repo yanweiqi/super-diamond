@@ -1,27 +1,16 @@
 package com.github.diamond.jetty;
 
-import java.io.File;
-
+import com.github.diamond.jetty.support.WebInfConfigurationExt;
+import com.github.diamond.utils.*;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.FragmentConfiguration;
-import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
-import org.eclipse.jetty.webapp.MetaInfConfiguration;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.webapp.WebXmlConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jetty.webapp.*;
+import org.slf4j.*;
 import org.springframework.util.StringUtils;
 
-import com.github.diamond.jetty.support.WebInfConfigurationExt;
-import com.github.diamond.utils.NetUtils;
-import com.github.diamond.utils.SystemPropertyUtil;
+import java.io.File;
 
 /**
  * 启动Jetty服务器。
@@ -39,8 +28,7 @@ public class JettyServer {
 	
 	static {
 		try {
-			org.apache.commons.configuration.Configuration config = 
-					new PropertiesConfiguration("META-INF/res/jetty.properties");
+			org.apache.commons.configuration.Configuration config = new PropertiesConfiguration("META-INF/res/jetty.properties");
 			
 			LOGGER.info("加载jetty.properties");
 			
@@ -55,7 +43,6 @@ public class JettyServer {
 	
 	public static void main(String[] args) {
 		Thread.currentThread().setContextClassLoader(JettyServer.class.getClassLoader());
-		
 		QueuedThreadPool pool = creatThreadPool();
 		Server server = new Server(pool);
 		
@@ -64,12 +51,12 @@ public class JettyServer {
 		//context.setResourceBase("H:\\codes\\opensources\\github\\super-diamond\\super-diamond-server\\src\\main\\webapp");
 		context.setContextPath("/superdiamond");
 		context.setConfigurations(new Configuration[]{ 
-				new AnnotationConfiguration(),
-				 new WebInfConfigurationExt(),
-				 new WebXmlConfiguration(),
-		         new MetaInfConfiguration(),
-		         new FragmentConfiguration(),
-		         new JettyWebXmlConfiguration()});
+				                  new AnnotationConfiguration(),
+				                  new WebInfConfigurationExt(),
+				                  new WebXmlConfiguration(),
+		                          new MetaInfConfiguration(),
+		                          new FragmentConfiguration(),
+		                          new JettyWebXmlConfiguration()});
 		context.setThrowUnavailableOnStartupException(true);
 		context.setParentLoaderPriority(true);
 		context.setClassLoader(JettyServer.class.getClassLoader());

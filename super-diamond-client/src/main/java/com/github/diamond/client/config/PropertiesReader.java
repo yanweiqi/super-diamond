@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 /**
  * This class is used to read properties lines. These lines do not terminate
  * with new-line chars but rather when there is no backslash sign a the end of

@@ -3,15 +3,10 @@
  */
 package com.github.diamond.client.event;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import com.github.diamond.client.util.NamedThreadFactory;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Create on @2013-8-28 @下午9:25:08
@@ -21,8 +16,7 @@ import com.github.diamond.client.util.NamedThreadFactory;
 public class EventSource {
 	private Collection<ConfigurationListener> listeners;
 	
-	private ExecutorService executorService = 
-			Executors.newSingleThreadExecutor(new NamedThreadFactory("config-event"));
+	private ExecutorService executorService = Executors.newSingleThreadExecutor(new NamedThreadFactory("config-event"));
 
 	public EventSource() {
 		initListeners();

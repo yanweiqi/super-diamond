@@ -37,8 +37,7 @@ import org.apache.commons.lang.text.StrLookup;
  * @version $Id: EnvironmentLookup.java 1210620 2011-12-05 20:57:31Z oheger $
  */
 public class EnvironmentLookup extends StrLookup {
-	private final Map<String, String> envMap = new HashMap<String, String>(
-			System.getenv());
+	private final Map<String, String> envMap = new HashMap<String, String>(System.getenv());
 
 	/**
 	 * Performs a lookup for the specified variable.

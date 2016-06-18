@@ -3,27 +3,18 @@
  */    
 package com.github.diamond.web.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.github.diamond.netty.DiamondServerHandler;
 import com.github.diamond.utils.SessionHolder;
 import com.github.diamond.web.model.User;
-import com.github.diamond.web.service.ConfigService;
-import com.github.diamond.web.service.ModuleService;
-import com.github.diamond.web.service.ProjectService;
+import com.github.diamond.web.service.*;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.*;
+import java.io.*;
 
 /**
  * Create on @2013-8-23 @上午11:46:19 
@@ -57,9 +48,16 @@ public class ConfigController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping("/config/save")
-	public String saveConfig(String type, Long configId, String configKey, String configValue, 
-			String configDesc, Long projectId, Long moduleId, Long selModuleId, int page, 
-			@RequestParam(defaultValue="")String flag) {
+	public String saveConfig(String type,
+							 Long configId,
+							 String configKey,
+							 String configValue,
+							 String configDesc,
+							 Long projectId,
+							 Long moduleId,
+							 Long selModuleId,
+							 int page,
+							 @RequestParam(defaultValue="")String flag) {
 		User user = (User) SessionHolder.getSession().getAttribute("sessionUser");
 		if(configId == null) {
 			configService.insertConfig(configKey, configValue, configDesc, projectId, moduleId, user.getUserCode());
@@ -77,7 +75,10 @@ public class ConfigController extends BaseController {
 	}
 	
 	@RequestMapping("/config/delete/{id}")
-	public String deleteConfig(String type, Long projectId, String moduleName, @PathVariable Long id) {
+	public String deleteConfig(String type,
+							   Long projectId,
+							   String moduleName,
+							   @PathVariable Long id) {
 		configService.deleteConfig(id, projectId);
 		
 		String projCode = (String)projectService.queryProject(projectId).get("PROJ_CODE");
@@ -86,8 +87,10 @@ public class ConfigController extends BaseController {
 	}
 	
 	@RequestMapping("/preview/{projectCode}/{type}")
-	public void preview(@PathVariable("type") String type, @PathVariable("projectCode") String projectCode, 
-			HttpServletRequest request, HttpServletResponse resp) {
+	public void preview(@PathVariable("type") String type,
+						@PathVariable("projectCode") String projectCode,
+					    HttpServletRequest request,
+						HttpServletResponse resp) {
 		try {
 			String format = request.getParameter("format");
 			if(StringUtils.isBlank(format)) {
@@ -113,9 +116,11 @@ public class ConfigController extends BaseController {
 	}
 	
 	@RequestMapping("/preview/{projectCode}/{module}/{type}")
-	public void previewModule(@PathVariable("type") String type, @PathVariable("module") String modules, 
-			@PathVariable("projectCode") String projectCode, 
-			HttpServletRequest request, HttpServletResponse resp) {
+	public void previewModule(@PathVariable("type") String type,
+							  @PathVariable("module") String modules,
+							  @PathVariable("projectCode") String projectCode,
+							  HttpServletRequest request,
+							  HttpServletResponse resp) {
 		try {
 			String format = request.getParameter("format");
 			if(StringUtils.isBlank(format)) {
@@ -142,10 +147,12 @@ public class ConfigController extends BaseController {
 	}
 	
 	@RequestMapping("/preview/{projectCode}/{module}/{key}/{type}")
-	public void previewKey(@PathVariable("type") String type, @PathVariable("key") String key,  
-			@PathVariable("module") String module, 
-			@PathVariable("projectCode") String projectCode, 
-			HttpServletRequest request, HttpServletResponse resp) {
+	public void previewKey(@PathVariable("type") String type,
+						   @PathVariable("key") String key,
+						   @PathVariable("module") String module,
+						   @PathVariable("projectCode") String projectCode,
+						   HttpServletRequest request,
+						   HttpServletResponse resp) {
 		try {
 			String config = configService.queryValue(projectCode, module, key, type);
 			resp.setContentType("text/plain");

@@ -34,8 +34,7 @@ public class NamedThreadFactory implements ThreadFactory {
 		mPrefix = prefix + "-thread-";
 		mDaemo = daemo;
 		SecurityManager s = System.getSecurityManager();
-		mGroup = (s == null) ? Thread.currentThread().getThreadGroup() : s
-				.getThreadGroup();
+		mGroup = (s == null) ? Thread.currentThread().getThreadGroup() : s.getThreadGroup();
 	}
 
 	public Thread newThread(Runnable runnable) {

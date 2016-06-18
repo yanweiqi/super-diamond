@@ -3,20 +3,18 @@
  */    
 package com.github.diamond.client;
 
-import java.util.List;
-import java.util.Properties;
-
+import com.github.diamond.client.event.ConfigurationListener;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.util.Assert;
 
-import com.github.diamond.client.event.ConfigurationListener;
+import java.util.*;
 
 /**
  * Create on @2013-8-26 @上午9:29:52 
  * @author bsli@ustcinfo.com
  */
 public class PropertiesConfigurationFactoryBean implements FactoryBean<Properties> {
-	private static PropertiesConfiguration __configuration;
+	private static PropertiesConfiguration configuration;
 	
 	private static boolean init = false;
 	
@@ -26,49 +24,63 @@ public class PropertiesConfigurationFactoryBean implements FactoryBean<Propertie
 	
 	public PropertiesConfigurationFactoryBean(List<ConfigurationListener> listeners) {
 		init = true;
-		__configuration = new PropertiesConfiguration();
+		configuration = new PropertiesConfiguration();
 		
 		if(listeners != null) {
 			for(ConfigurationListener listener : listeners) {
-				__configuration.addConfigurationListener(listener);
+				configuration.addConfigurationListener(listener);
 			}
 		}
 	}
 	
-	public PropertiesConfigurationFactoryBean(final String projCode, final String profile, final String modules) {
+	public PropertiesConfigurationFactoryBean(final String projCode,
+											  final String profile,
+											  final String modules) {
 		this(projCode, profile, modules, null);
 	}
 	
-	public PropertiesConfigurationFactoryBean(final String projCode, final String profile, final String modules, List<ConfigurationListener> listeners) {
+	public PropertiesConfigurationFactoryBean(final String projCode,
+											  final String profile,
+											  final String modules,
+											  List<ConfigurationListener> listeners) {
 		init = true;
-		__configuration = new PropertiesConfiguration(projCode, profile);
+		configuration = new PropertiesConfiguration(projCode, profile);
 		
 		if(listeners != null) {
 			for(ConfigurationListener listener : listeners) {
-				__configuration.addConfigurationListener(listener);
+				configuration.addConfigurationListener(listener);
 			}
 		}
 	}
 	
-	public PropertiesConfigurationFactoryBean(String host, int port, final String projCode, final String profile, final String modules) {
+	public PropertiesConfigurationFactoryBean(String host,
+											  int port,
+											  final String projCode,
+											  final String profile,
+											  final String modules) {
 		this(host, port, projCode, profile, modules, null);
 	}
 	
-	public PropertiesConfigurationFactoryBean(String host, int port, final String projCode, final String profile, final String modules, List<ConfigurationListener> listeners) {
+	public PropertiesConfigurationFactoryBean(String host,
+											  int port,
+											  final String projCode,
+											  final String profile,
+											  final String modules,
+											  List<ConfigurationListener> listeners) {
 		init = true;
-		__configuration = new PropertiesConfiguration(host, port, projCode, profile, modules);
+		configuration = new PropertiesConfiguration(host, port, projCode, profile, modules);
 		
 		if(listeners != null) {
 			for(ConfigurationListener listener : listeners) {
-				__configuration.addConfigurationListener(listener);
+				configuration.addConfigurationListener(listener);
 			}
 		}
 	}
 	
 	@Override
 	public Properties getObject() throws Exception {
-		Assert.notNull(__configuration);
-		return __configuration.getProperties();
+		Assert.notNull(configuration);
+		return configuration.getProperties();
 	}
 
 	@Override
@@ -85,6 +97,6 @@ public class PropertiesConfigurationFactoryBean implements FactoryBean<Propertie
 		if(!init) {
 			throw new ConfigurationRuntimeException("PropertiesConfigurationFactoryBean 没有初始化");
 		}
-		return __configuration;
+		return configuration;
 	}
 }

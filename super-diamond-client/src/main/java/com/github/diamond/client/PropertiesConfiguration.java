@@ -51,11 +51,11 @@ public class PropertiesConfiguration extends EventSource {
 	
 	private static final ExecutorService reloadExecutorService = Executors.newSingleThreadExecutor(new NamedThreadFactory("ReloadConfigExecutorService", true));
 	
-	private static String _host;
-	private static int _port = 0;
-	private static String _projCode;
-	private static String _profile;
-	private static String _modules;
+	private static String host;
+	private static int port = 0;
+	private static String projCode;
+	private static String profile;
+	private static String modules;
 	
 	private static final long FIRST_CONNECT_TIMEOUT = 2;
 	
@@ -66,13 +66,13 @@ public class PropertiesConfiguration extends EventSource {
 	 * @param profile
 	 */
 	public PropertiesConfiguration() {
-		_host = getHost();
-		_port = getPort();
-		_projCode = getProjCode();
-		_profile = getProfile();
-		_modules = getModules();
+		host = getHost();
+		port = getPort();
+		projCode = getProjCode();
+		profile = getProfile();
+		modules = getModules();
 		
-		connectServer(_host, _port, _projCode, _profile, _modules);
+		connectServer(host, port, projCode, profile, modules);
 		substitutor = new StrSubstitutor(createInterpolator());
 	}
 
@@ -83,13 +83,13 @@ public class PropertiesConfiguration extends EventSource {
 	 * @param profile
 	 */
 	public PropertiesConfiguration(final String projCode, final String profile) {
-		_host = getHost();
-		_port = getPort();
-		_projCode = projCode;
-		_profile = profile;
-		_modules = "";
+		host = getHost();
+		port = getPort();
+		PropertiesConfiguration.projCode = projCode;
+		PropertiesConfiguration.profile = profile;
+		modules = "";
 		
-		connectServer(_host, _port, _projCode, _profile, _modules);
+		connectServer(host, port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, modules);
 		substitutor = new StrSubstitutor(createInterpolator());
 	}
 	
@@ -100,35 +100,35 @@ public class PropertiesConfiguration extends EventSource {
 	 * @param profile
 	 */
 	public PropertiesConfiguration(final String projCode, final String profile, String modules) {
-		_host = getHost();
-		_port = getPort();
-		_projCode = projCode;
-		_profile = profile;
-		_modules = modules;
+		host = getHost();
+		port = getPort();
+		PropertiesConfiguration.projCode = projCode;
+		PropertiesConfiguration.profile = profile;
+		PropertiesConfiguration.modules = modules;
 		
-		connectServer(_host, _port, _projCode, _profile, _modules);
+		connectServer(host, port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, PropertiesConfiguration.modules);
 		substitutor = new StrSubstitutor(createInterpolator());
 	}
 
 	public PropertiesConfiguration(String host, int port, final String projCode, final String profile) {
-		_host = host;
-		_port = port;
-		_projCode = projCode;
-		_profile = profile;
-		_modules = "";
+		PropertiesConfiguration.host = host;
+		PropertiesConfiguration.port = port;
+		PropertiesConfiguration.projCode = projCode;
+		PropertiesConfiguration.profile = profile;
+		modules = "";
 		
-		connectServer(_host, _port, _projCode, _profile, _modules);
+		connectServer(PropertiesConfiguration.host, PropertiesConfiguration.port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, modules);
 		substitutor = new StrSubstitutor(createInterpolator());
 	}
 	
 	public PropertiesConfiguration(String host, int port, final String projCode, final String profile, String modules) {
-		_host = host;
-		_port = port;
-		_projCode = projCode;
-		_profile = profile;
-		_modules = modules;
+		PropertiesConfiguration.host = host;
+		PropertiesConfiguration.port = port;
+		PropertiesConfiguration.projCode = projCode;
+		PropertiesConfiguration.profile = profile;
+		PropertiesConfiguration.modules = modules;
 		
-		connectServer(_host, _port, _projCode, _profile, _modules);
+		connectServer(PropertiesConfiguration.host, PropertiesConfiguration.port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, PropertiesConfiguration.modules);
 		substitutor = new StrSubstitutor(createInterpolator());
 	}
 	
@@ -253,56 +253,56 @@ public class PropertiesConfiguration extends EventSource {
 	}
 	
 	public static String getProjCode() {
-		if(StringUtils.isNotBlank(_projCode))
-			return _projCode;
+		if(StringUtils.isNotBlank(projCode))
+			return projCode;
 		
-		_projCode = System.getenv("SUPERDIAMOND_PROJCODE");
-		if(StringUtils.isBlank(_projCode)) {
+		projCode = System.getenv("SUPERDIAMOND_PROJCODE");
+		if(StringUtils.isBlank(projCode)) {
 			return System.getProperty("superdiamond.projcode");
 		} else {
-			return _projCode;
+			return projCode;
 		}
 	}
 	
 	public static String getProfile() {
-		if(StringUtils.isNotBlank(_profile))
-			return _profile;
+		if(StringUtils.isNotBlank(profile))
+			return profile;
 		
-		_profile = System.getenv("SUPERDIAMOND_PROFILE");
-		if(StringUtils.isBlank(_profile)) {
+		profile = System.getenv("SUPERDIAMOND_PROFILE");
+		if(StringUtils.isBlank(profile)) {
 			return System.getProperty("superdiamond.profile", "development");
 		} else {
-			return _profile;
+			return profile;
 		}
 	}
 	
 	public static String getModules() {
-		if(StringUtils.isNotBlank(_modules))
-			return _modules;
+		if(StringUtils.isNotBlank(modules))
+			return modules;
 		
-		_modules = System.getenv("SUPERDIAMOND_MODULES");
-		if(StringUtils.isBlank(_modules)) {
+		modules = System.getenv("SUPERDIAMOND_MODULES");
+		if(StringUtils.isBlank(modules)) {
 			return System.getProperty("superdiamond.modules");
 		} else {
-			return _modules;
+			return modules;
 		}
 	}
 	
 	public static String getHost() {
-		if(StringUtils.isNotBlank(_host))
-			return _host;
+		if(StringUtils.isNotBlank(host))
+			return host;
 		
-		_host = System.getenv("SUPERDIAMOND_HOST");
-		if(StringUtils.isBlank(_host)) {
+		host = System.getenv("SUPERDIAMOND_HOST");
+		if(StringUtils.isBlank(host)) {
 			return System.getProperty("superdiamond.host", "localhost");
 		} else {
-			return _host;
+			return host;
 		}
 	}
 	
 	public static int getPort() {
-		if(_port > 1)
-			return _port;
+		if(port > 1)
+			return port;
 			
 		if(StringUtils.isBlank(System.getenv("SUPERDIAMOND_PORT"))) {
 			return Integer.valueOf(System.getProperty("superdiamond.port", "8283"));

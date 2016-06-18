@@ -32,15 +32,17 @@ import com.github.diamond.web.service.ConfigService;
  */
 @Sharable
 public class DiamondServerHandler extends SimpleChannelInboundHandler<String> {
-	
-	public static ConcurrentHashMap<ClientKey /*projcode+profile*/, List<ClientInfo> /*client address*/> clients = 
-			new ConcurrentHashMap<ClientKey, List<ClientInfo>>();
-	
-	private ConcurrentHashMap<String /*client address*/, ChannelHandlerContext> channels = 
-			new ConcurrentHashMap<String, ChannelHandlerContext>();
 
-    private static final Logger logger = LoggerFactory.getLogger(DiamondServerHandler.class);
-    
+	private static final Logger logger = LoggerFactory.getLogger(DiamondServerHandler.class);
+
+	/**
+	 * projcode+profile
+	 * client address
+	 */
+	public static ConcurrentHashMap<ClientKey, List<ClientInfo>> clients = new ConcurrentHashMap<ClientKey, List<ClientInfo>>();
+	
+	private ConcurrentHashMap<String, ChannelHandlerContext> channels = new ConcurrentHashMap<String, ChannelHandlerContext>();
+
     private final Charset charset = Charset.forName("UTF-8");
     
     @Autowired
@@ -51,7 +53,6 @@ public class DiamondServerHandler extends SimpleChannelInboundHandler<String> {
     	logger.info(ctx.channel().remoteAddress() + " 连接到服务器。");
     }
     
-    @SuppressWarnings("unchecked")
 	@Override
     public void channelRead0(ChannelHandlerContext ctx, String request) throws Exception {
     	String config;
@@ -117,7 +118,6 @@ public class DiamondServerHandler extends SimpleChannelInboundHandler<String> {
     			}
     		}
     	}
-    	
     	logger.info(ctx.channel().remoteAddress() + " 断开连接。");
     }
     

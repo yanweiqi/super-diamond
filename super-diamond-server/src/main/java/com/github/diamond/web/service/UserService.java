@@ -1,23 +1,17 @@
 package com.github.diamond.web.service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.github.diamond.utils.MD5;
+import com.github.diamond.web.model.User;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.TransientDataAccessResourceException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.*;
+import org.springframework.jdbc.core.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.diamond.utils.MD5;
-import com.github.diamond.web.model.User;
+import java.sql.*;
+import java.util.Date;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -98,8 +92,7 @@ public class UserService {
 	
 	private class UserRowMapper implements RowMapper<User> {
 
-		public User mapRow(ResultSet rs, int rowNum) throws SQLException,
-				DataAccessException {
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException, DataAccessException {
 			User user = new User();
 			user.setId(rs.getLong(1));
 			user.setUserCode(rs.getString(2));

@@ -299,8 +299,7 @@ public class ProjectService {
 	
 	private class UserRowMapper implements RowMapper<User> {
 
-		public User mapRow(ResultSet rs, int rowNum) throws SQLException,
-				DataAccessException {
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException, DataAccessException {
 			User user = new User();
 			user.setId(rs.getLong(1));
 			user.setUserCode(rs.getString(2));
