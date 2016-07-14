@@ -29,24 +29,38 @@ import com.github.diamond.client.util.NamedThreadFactory;
  */
 public class Netty4Client {
 	private static final Logger logger = LoggerFactory.getLogger(Netty4Client.class);
+	
 	private String host;
+	
 	private int port;
+	
 	private int timeout = 1000;
+	
     private int connectTimeout = 3000;
     
     private final EventLoopGroup group = new NioEventLoopGroup();
+    
     private ClientChannelInitializer channelInitializer;
+    
     private Bootstrap bootstrap;
+    
     private volatile Channel channel;
+    
     private volatile ChannelFuture future;  
     
     private volatile  ScheduledFuture<?> reconnectExecutorFuture = null;
+    
     private long lastConnectedTime = System.currentTimeMillis();
+    
     private final AtomicInteger reconnect_count = new AtomicInteger(0);
+    
     private final AtomicBoolean reconnect_error_log_flag = new AtomicBoolean(false) ;
+    
     //重连warning的间隔.(waring多少次之后，warning一次)
     private final int reconnect_warning_period = 1800;	
+    
     private final long shutdown_timeout = 1000 * 60 * 15;
+    
     private static final ScheduledThreadPoolExecutor reconnectExecutorService = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("ClientReconnectTimer", true));
     
     public Netty4Client(String host, int port, ClientChannelInitializer channelInitializer) throws Exception {
@@ -58,16 +72,13 @@ public class Netty4Client {
             doOpen();
         } catch (Throwable t) {
             close();
-            throw new Exception("Failed to start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() 
-                                        + " connect to the server " + host + ", cause: " + t.getMessage(), t);
+            throw new Exception("Failed to start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + host + ", cause: " + t.getMessage(), t);
         }
         try {
             connect();
-                
             logger.info("Start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + host);
         } catch (Throwable t){
-            throw new Exception("Failed to start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() 
-                    + " connect to the server " + host + ", cause: " + t.getMessage(), t);
+            throw new Exception("Failed to start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + host + ", cause: " + t.getMessage(), t);
         }
     }
     
@@ -137,18 +148,15 @@ public class Netty4Client {
             initConnectStatusCheckCommand();
             doConnect();
             if (! isConnected()) {
-                throw new Exception("Failed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " "
-                                            + NetUtils.getLocalHost() + ", cause: Connect wait timeout: " + getTimeout() + "ms.");
+                throw new Exception("Failed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " " + NetUtils.getLocalHost() + ", cause: Connect wait timeout: " + getTimeout() + "ms.");
             } else {
-            	logger.info("Successed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " "
-                                            + NetUtils.getLocalHost() + ", channel is " + this.channel);
+            	logger.info("Successed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " "  + NetUtils.getLocalHost() + ", channel is " + this.channel);
             }
             
             reconnect_count.set(0);
             reconnect_error_log_flag.set(false);
         } catch (Throwable e) {
-            logger.error("Failed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " "
-                                        + NetUtils.getLocalHost());
+            logger.error("Failed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " "+ NetUtils.getLocalHost());
         }
     }
     

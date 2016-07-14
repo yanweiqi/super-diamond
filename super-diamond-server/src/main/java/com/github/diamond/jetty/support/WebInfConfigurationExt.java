@@ -8,8 +8,6 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 
-import com.github.diamond.utils.SystemPropertyUtil;
-
 /**
  * 只用于测试和生产环境，默认从WEB-INF/lib目录下加载jar，改成从BASE_HOME/lib目录下加载jar
  * 
@@ -33,8 +31,8 @@ public class WebInfConfigurationExt extends WebInfConfiguration {
 	@Override
 	protected List<Resource> findWebInfLibJars(WebAppContext context)
 			throws Exception {
-		Resource baseHome = Resource.newResource(SystemPropertyUtil.get("BASE_HOME"));
-		//Resource baseHome = Resource.newResource("D:/");
+		//Resource baseHome = Resource.newResource(SystemPropertyUtil.get("BASE_HOME"));
+		Resource baseHome = Resource.newResource("D:\\workspace\\eclipse\\ywq\\super-diamond\\super-diamond-server\\target\\super-diamond-server-1.1.0-SNAPSHOT\\WEB-INF");
 		if (baseHome == null || !baseHome.exists())
 			return null;
 

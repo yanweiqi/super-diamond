@@ -15,7 +15,9 @@ import io.netty.util.CharsetUtil;
  * @author bsli@ustcinfo.com
  */
 public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
+	
     private static final StringDecoder DECODER = new StringDecoder(CharsetUtil.UTF_8);
+    
     private static final Netty4ClientHandler CLIENTHANDLER = new Netty4ClientHandler();
     
     private String clientMsg;
@@ -27,11 +29,9 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
 	@Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-
         pipeline.addLast("info", new SendConnectInfoHandler(clientMsg));
         pipeline.addLast("frame", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
         pipeline.addLast("decoder", DECODER);
-
         pipeline.addLast("handler", CLIENTHANDLER);
     }
     

@@ -135,8 +135,7 @@ public class PropertiesConfiguration extends EventSource {
 	protected void connectServer(String host, int port, final String projCode, final String profile, final String modules) {
 		Assert.notNull(projCode, "连接superdiamond， projCode不能为空");
 		
-		final String clientMsg = "superdiamond={\"projCode\": \"" + projCode + "\", \"profile\": \"" + profile + "\", "
-				+ "\"modules\": \"" + modules + "\", \"version\": \"1.1.0\"}";
+		final String clientMsg = "superdiamond={\"projCode\": \"" + projCode + "\", \"profile\": \"" + profile + "\", "+ "\"modules\": \"" + modules + "\", \"version\": \"1.1.0\"}";
 		try {
 			client = new Netty4Client(host, port, new ClientChannelInitializer(clientMsg));
 			

@@ -70,9 +70,7 @@
 
     <filter>
     	<filter-name>sitemesh</filter-name>
-    	<filter-class>
-    		com.opensymphony.module.sitemesh.filter.PageFilter
-    	</filter-class>
+    	<filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -109,11 +107,12 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	
+	<!--  
 	<servlet>
 		<servlet-name>PrintProjectVersionServlet</servlet-name>
 		<servlet-class>com.github.diamond.support.PrintProjectVersionServlet</servlet-class>
 		<load-on-startup>999</load-on-startup>
 	</servlet>
-
+	-->
 
 </web-app>
