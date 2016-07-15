@@ -1,6 +1,3 @@
-/**        
- * Copyright (c) 2013 by 苏州科大国创信息技术有限公司.    
- */
 package com.github.diamond.client.event;
 
 import com.github.diamond.client.util.NamedThreadFactory;
@@ -14,6 +11,7 @@ import java.util.concurrent.*;
  * @author bsli@ustcinfo.com
  */
 public class EventSource {
+	
 	private Collection<ConfigurationListener> listeners;
 	
 	private ExecutorService executorService = Executors.newSingleThreadExecutor(new NamedThreadFactory("config-event"));
@@ -32,9 +30,7 @@ public class EventSource {
 	}
 
 	public Collection<ConfigurationListener> getConfigurationListeners() {
-		return Collections
-				.unmodifiableCollection(new ArrayList<ConfigurationListener>(
-						listeners));
+		return Collections.unmodifiableCollection(new ArrayList<ConfigurationListener>(listeners));
 	}
 
 	public void clearConfigurationListeners() {

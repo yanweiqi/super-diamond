@@ -3,18 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!--  
 	<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
 		<property name="properties" ref="propertiesConfiguration" />
 	</bean>
+			<constructor-arg index="3" value="development" />
+	-->
 	
 	<bean id="propertiesConfiguration" class="com.github.diamond.client.PropertiesConfigurationFactoryBean">
-		<constructor-arg index="0" value="localhost" />
-		<constructor-arg index="1" value="8283" />
-		<constructor-arg index="2" value="test" />
-		<constructor-arg index="3" value="development" />
+		<constructor-arg index="0" value="1009" />
+		<constructor-arg index="1" value="development" />
+		<constructor-arg index="2" value="core" />
+
 	</bean>
 	
 	<bean class="com.github.diamond.client.DatasourceTest">
-		<property name="url" value="${jdbc.url}" />
+		<property name="url" value="yyyy" />
 	</bean>
 </beans>

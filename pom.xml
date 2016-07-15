@@ -17,7 +17,7 @@
 
 		<cglib.version>3.1</cglib.version>
 		<aspectj.version>1.7.2</aspectj.version>
-		<spring.version>3.2.12.RELEASE</spring.version>
+		<spring.version>4.1.4.RELEASE</spring.version>
 
 		<oracle.version>10.2.0.1.0</oracle.version>
 		<mysql.version>5.1.31</mysql.version>

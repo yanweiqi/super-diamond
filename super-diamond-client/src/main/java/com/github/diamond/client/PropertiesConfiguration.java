@@ -1,6 +1,3 @@
-/**        
- * Copyright (c) 2013 by 苏州科大国创信息技术有限公司.    
- */
 package com.github.diamond.client;
 
 import java.io.IOException;
@@ -33,9 +30,7 @@ import com.github.diamond.client.util.FileUtils;
 import com.github.diamond.client.util.NamedThreadFactory;
 
 /**
- * Create on @2013-8-25 @下午1:17:38
- * 
- * @author bsli@ustcinfo.com
+ * @author yanweiqi@yeah.net
  */
 public class PropertiesConfiguration extends EventSource {
 	

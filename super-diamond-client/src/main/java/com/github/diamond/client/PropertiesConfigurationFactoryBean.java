@@ -1,6 +1,3 @@
-/**        
- * Copyright (c) 2013 by 苏州科大国创信息技术有限公司.    
- */    
 package com.github.diamond.client;
 
 import com.github.diamond.client.event.ConfigurationListener;
@@ -10,73 +7,90 @@ import org.springframework.util.Assert;
 import java.util.*;
 
 /**
- * Create on @2013-8-26 @上午9:29:52 
- * @author bsli@ustcinfo.com
+ * 
+ * @author yanweiqi
  */
 public class PropertiesConfigurationFactoryBean implements FactoryBean<Properties> {
+
 	private static PropertiesConfiguration configuration;
-	
+
 	private static boolean init = false;
-	
+
 	public PropertiesConfigurationFactoryBean() {
 		this(null);
 	}
-	
+
 	public PropertiesConfigurationFactoryBean(List<ConfigurationListener> listeners) {
 		init = true;
 		configuration = new PropertiesConfiguration();
-		
-		if(listeners != null) {
-			for(ConfigurationListener listener : listeners) {
+
+		if (listeners != null) {
+			for (ConfigurationListener listener : listeners) {
 				configuration.addConfigurationListener(listener);
 			}
 		}
 	}
-	
-	public PropertiesConfigurationFactoryBean(final String projCode,
-											  final String profile,
-											  final String modules) {
+
+	/**
+	 * 构造函数
+	 * @param projCode
+	 * @param profile
+	 * @param modules
+	 */
+	public PropertiesConfigurationFactoryBean(final String projCode, final String profile, final String modules) {
 		this(projCode, profile, modules, null);
 	}
-	
-	public PropertiesConfigurationFactoryBean(final String projCode,
-											  final String profile,
-											  final String modules,
-											  List<ConfigurationListener> listeners) {
+
+	/**
+	 * 构造函数
+	 * @param projCode
+	 * @param profile
+	 * @param modules
+	 * @param listeners
+	 */
+	public PropertiesConfigurationFactoryBean(final String projCode, final String profile, final String modules, List<ConfigurationListener> listeners) {
 		init = true;
 		configuration = new PropertiesConfiguration(projCode, profile);
-		
-		if(listeners != null) {
-			for(ConfigurationListener listener : listeners) {
+
+		if (listeners != null) {
+			for (ConfigurationListener listener : listeners) {
 				configuration.addConfigurationListener(listener);
 			}
 		}
 	}
-	
-	public PropertiesConfigurationFactoryBean(String host,
-											  int port,
-											  final String projCode,
-											  final String profile,
-											  final String modules) {
+
+	/**
+	 * 构造函数
+	 * @param host
+	 * @param port
+	 * @param projCode
+	 * @param profile
+	 * @param modules
+	 */
+	public PropertiesConfigurationFactoryBean(String host, int port, final String projCode, final String profile, final String modules) {
 		this(host, port, projCode, profile, modules, null);
 	}
-	
-	public PropertiesConfigurationFactoryBean(String host,
-											  int port,
-											  final String projCode,
-											  final String profile,
-											  final String modules,
-											  List<ConfigurationListener> listeners) {
+
+	/**
+	 *  构造函数
+	 * @param host
+	 * @param port
+	 * @param projCode
+	 * @param profile
+	 * @param modules
+	 * @param listeners
+	 */
+	public PropertiesConfigurationFactoryBean(String host, int port, final String projCode, final String profile, final String modules, List<ConfigurationListener> listeners) {
 		init = true;
 		configuration = new PropertiesConfiguration(host, port, projCode, profile, modules);
-		
-		if(listeners != null) {
-			for(ConfigurationListener listener : listeners) {
+
+		if (listeners != null) {
+			for (ConfigurationListener listener : listeners) {
 				configuration.addConfigurationListener(listener);
 			}
 		}
 	}
-	
+
 	@Override
 	public Properties getObject() throws Exception {
 		Assert.notNull(configuration);
@@ -92,9 +106,9 @@ public class PropertiesConfigurationFactoryBean implements FactoryBean<Propertie
 	public boolean isSingleton() {
 		return true;
 	}
-	
+
 	public static PropertiesConfiguration getPropertiesConfiguration() {
-		if(!init) {
+		if (!init) {
 			throw new ConfigurationRuntimeException("PropertiesConfigurationFactoryBean 没有初始化");
 		}
 		return configuration;
