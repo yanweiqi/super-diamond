@@ -1,6 +1,3 @@
-/**        
- * Copyright (c) 2013 by 苏州科大国创信息技术有限公司.    
- */    
 package com.github.diamond.client.netty;
 
 import java.io.IOException;
@@ -17,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Create on @2013-8-25 @下午12:56:41 
- * @author bsli@ustcinfo.com
+ * 网络工具类
  */
 public class NetUtils {
 	private static final Logger logger = LoggerFactory.getLogger(NetUtils.class);

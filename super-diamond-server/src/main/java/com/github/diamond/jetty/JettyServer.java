@@ -22,13 +22,10 @@ import com.github.diamond.utils.NetUtils;
 
 /**
  * 启动Jetty服务器。
- * 
- * @author libinsong1204@gmail.com
  *
  */
 public class JettyServer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
-	
 	private static int maxThreads;
 	private static int minThreads;
 	private static int serverPort;
@@ -37,9 +34,7 @@ public class JettyServer {
 	static {
 		try {
 			org.apache.commons.configuration.Configuration config = new PropertiesConfiguration("META-INF/res/jetty.properties");
-			
 			LOGGER.info("加载jetty.properties");
-			
 			maxThreads = config.getInt("thread.pool.max.size", 100);
 			minThreads = config.getInt("thread.pool.min.size", 10);
 			serverPort = config.getInt("server.port", 8080);
@@ -69,9 +64,7 @@ public class JettyServer {
 		context.setParentLoaderPriority(true);
 		context.setClassLoader(JettyServer.class.getClassLoader());
 		server.setHandler(context);
-		
 		createServerConnector(server);
-		
 		addShutdownHook(server);
 		try {
 			server.start();
@@ -102,12 +95,11 @@ public class JettyServer {
 		ServerConnector connector = new ServerConnector(server, factory);
 		connector.setPort(serverPort);
 		
-		if(!StringUtils.hasText(serverHost))
-			serverHost = NetUtils.getLocalHost();
+		if(!StringUtils.hasText(serverHost)) serverHost = NetUtils.getLocalHost();
 		connector.setHost(serverHost);
 		
 		LOGGER.info("jetty host={}, port={}", serverHost, serverPort);
-		
+	
 		connector.setReuseAddress(true);
 		connector.setAcceptQueueSize(1024);//backlog值
 		connector.setIdleTimeout(30000); 

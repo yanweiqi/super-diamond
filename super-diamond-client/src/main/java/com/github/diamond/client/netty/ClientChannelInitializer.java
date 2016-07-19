@@ -1,6 +1,3 @@
-/**        
- * Copyright (c) 2013 by 苏州科大国创信息技术有限公司.    
- */    
 package com.github.diamond.client.netty;
 
 import io.netty.channel.ChannelInitializer;
@@ -11,8 +8,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
 
 /**
- * Create on @2013-8-24 @上午10:23:23 
- * @author bsli@ustcinfo.com
+ * @author yanweiqi
  */
 public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 	

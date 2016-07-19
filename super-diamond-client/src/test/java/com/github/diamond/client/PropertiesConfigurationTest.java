@@ -3,6 +3,10 @@
  */    
 package com.github.diamond.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,10 +57,23 @@ public class PropertiesConfigurationTest {
 	@Test
 	public void testSysEvns() throws ConfigurationRuntimeException  {
 		String config = "javaHome = ${env:JAVA_HOME}/lib \r\n";
-		
 		PropertiesConfiguration configuration = new PropertiesConfiguration();
 		configuration.load(config);
-		
 		Assert.assertEquals(System.getenv("JAVA_HOME") + "/lib", configuration.getString("javaHome"));
+	}
+	
+	@Test
+	public void testStrSubstitutor(){
+		
+		Map<String,String> valuesMap = new HashMap<String,String>();
+		valuesMap.put("animal", "quick brown fox");
+		valuesMap.put("target", "lazy dog");
+		String templateString = "The ${animal} jumped over the ${target}.";
+		System.out.println(templateString);
+		
+		StrSubstitutor sub = new StrSubstitutor(valuesMap);
+		String resolvedString = sub.replace(templateString);
+		System.out.println(resolvedString);
+		
 	}
 }

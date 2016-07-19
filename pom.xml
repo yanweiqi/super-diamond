@@ -33,6 +33,8 @@
 
 		<junit.version>4.11</junit.version>
 		<jetty.version>9.2.2.v20140723</jetty.version>
+		
+		<javax.inject.version>1</javax.inject.version>
 	</properties>
 
 	<dependencyManagement>
@@ -145,6 +147,12 @@
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
+			
+			<dependency>
+				<groupId>javax.inject</groupId>
+				<artifactId>javax.inject</artifactId>
+				<version>${javax.inject.version}</version>
+			</dependency> 
 		</dependencies>
 	</dependencyManagement>
 

@@ -33,30 +33,29 @@ import com.github.diamond.client.util.NamedThreadFactory;
  * @author yanweiqi@yeah.net
  */
 public class PropertiesConfiguration extends EventSource {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesConfiguration.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(PropertiesConfiguration.class);
 
 	private StrSubstitutor substitutor;
-	
+
 	private Map<String, String> store = null;
-	
+
 	private Netty4Client client;
-	
+
 	private volatile boolean reloadable = true;
-	
+
 	private static final ExecutorService reloadExecutorService = Executors.newSingleThreadExecutor(new NamedThreadFactory("ReloadConfigExecutorService", true));
-	
+
 	private static String host;
-	private static int port = 0;
+	private static int     port = 0;
 	private static String projCode;
 	private static String profile;
 	private static String modules;
-	
+
 	private static final long FIRST_CONNECT_TIMEOUT = 2;
-	
+
 	/**
 	 * 从jvm参数中获取 projCode、profile、host和port值
-	 * 
 	 * @param projCode
 	 * @param profile
 	 */
@@ -66,81 +65,34 @@ public class PropertiesConfiguration extends EventSource {
 		projCode = getProjCode();
 		profile = getProfile();
 		modules = getModules();
-		
 		connectServer(host, port, projCode, profile, modules);
 		substitutor = new StrSubstitutor(createInterpolator());
 	}
 
-	/**
-	 * 从jvm参数中获取 host和port值
-	 * 
-	 * @param projCode
-	 * @param profile
-	 */
-	public PropertiesConfiguration(final String projCode, final String profile) {
-		host = getHost();
-		port = getPort();
-		PropertiesConfiguration.projCode = projCode;
-		PropertiesConfiguration.profile = profile;
-		modules = "";
-		
-		connectServer(host, port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, modules);
-		substitutor = new StrSubstitutor(createInterpolator());
-	}
-	
-	/**
-	 * 从jvm参数中获取 host和port值
-	 * 
-	 * @param projCode
-	 * @param profile
-	 */
-	public PropertiesConfiguration(final String projCode, final String profile, String modules) {
-		host = getHost();
-		port = getPort();
-		PropertiesConfiguration.projCode = projCode;
-		PropertiesConfiguration.profile = profile;
-		PropertiesConfiguration.modules = modules;
-		
-		connectServer(host, port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, PropertiesConfiguration.modules);
-		substitutor = new StrSubstitutor(createInterpolator());
-	}
-
-	public PropertiesConfiguration(String host, int port, final String projCode, final String profile) {
-		PropertiesConfiguration.host = host;
-		PropertiesConfiguration.port = port;
-		PropertiesConfiguration.projCode = projCode;
-		PropertiesConfiguration.profile = profile;
-		modules = "";
-		
-		connectServer(PropertiesConfiguration.host, PropertiesConfiguration.port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, modules);
-		substitutor = new StrSubstitutor(createInterpolator());
-	}
-	
 	public PropertiesConfiguration(String host, int port, final String projCode, final String profile, String modules) {
 		PropertiesConfiguration.host = host;
 		PropertiesConfiguration.port = port;
 		PropertiesConfiguration.projCode = projCode;
 		PropertiesConfiguration.profile = profile;
 		PropertiesConfiguration.modules = modules;
-		
 		connectServer(PropertiesConfiguration.host, PropertiesConfiguration.port, PropertiesConfiguration.projCode, PropertiesConfiguration.profile, PropertiesConfiguration.modules);
 		substitutor = new StrSubstitutor(createInterpolator());
 	}
-	
+
 	protected void connectServer(String host, int port, final String projCode, final String profile, final String modules) {
 		Assert.notNull(projCode, "连接superdiamond， projCode不能为空");
-		
-		final String clientMsg = "superdiamond={\"projCode\": \"" + projCode + "\", \"profile\": \"" + profile + "\", "+ "\"modules\": \"" + modules + "\", \"version\": \"1.1.0\"}";
+
+		final String clientMsg = "superdiamond={\"projCode\": \"" + projCode + "\", \"profile\": \"" + profile + "\", " + "\"modules\": \"" + modules + "\", \"version\": \"1.1.0\"}";
 		try {
 			client = new Netty4Client(host, port, new ClientChannelInitializer(clientMsg));
-			
-			if(client.isConnected()) {
+
+			if (client.isConnected()) {
 				String message = client.receiveMessage(FIRST_CONNECT_TIMEOUT);
-				
-				if(StringUtils.isNotBlank(message)) {
+
+				if (StringUtils.isNotBlank(message)) {
 					String versionStr = message.substring(0, message.indexOf("\r\n"));
-					LOGGER.info("加载配置信息，项目编码：{}，Profile：{}, Version：{}", projCode, profile, versionStr.split(" = ")[1]);
-					
+					logger.info("加载配置信息，项目编码：{}，Profile：{}, Version：{}", projCode, profile, versionStr.split(" = ")[1]);
+
 					FileUtils.saveData(projCode, profile, message);
 					load(new StringReader(message), false);
 				} else {
@@ -148,85 +100,83 @@ public class PropertiesConfiguration extends EventSource {
 				}
 			} else {
 				String message = FileUtils.readConfigFromLocal(projCode, profile);
-				if(message != null) {
+				if (message != null) {
 					String versionStr = message.substring(0, message.indexOf("\r\n"));
-					LOGGER.info("加载本地备份配置信息，项目编码：{}，Profile：{}, Version：{}", projCode, profile, versionStr.split(" = ")[1]);
-					
+					logger.info("加载本地备份配置信息，项目编码：{}，Profile：{}, Version：{}", projCode, profile, versionStr.split(" = ")[1]);
+
 					load(new StringReader(message), false);
 				} else
 					throw new ConfigurationRuntimeException("本地没有备份配置数据，PropertiesConfiguration 初始化失败。");
 			}
-			
+
 			reloadExecutorService.submit(new Runnable() {
-				
+
 				@Override
 				public void run() {
-					while(reloadable) {
+					while (reloadable) {
 						try {
-							if(client.isConnected()) {
+							if (client.isConnected()) {
 								String message = client.receiveMessage();
-								
-								if(message != null) {
+
+								if (message != null) {
 									String versionStr = message.substring(0, message.indexOf("\r\n"));
-									LOGGER.info("重新加载配置信息，项目编码：{}，Profile：{}, Version：{}", projCode, profile, versionStr.split(" = ")[1]);
+									logger.info("重新加载配置信息，项目编码：{}，Profile：{}, Version：{}", projCode, profile, versionStr.split(" = ")[1]);
 									FileUtils.saveData(projCode, profile, message);
 									load(new StringReader(message), true);
 								}
 							} else {
 								TimeUnit.SECONDS.sleep(1);
 							}
-						} catch(Exception e) {
-							
+						} catch (Exception e) {
+
 						}
 					}
 				}
 			});
 		} catch (Exception e) {
-			if(client != null) {
+			if (client != null) {
 				client.close();
 			}
 			throw new ConfigurationRuntimeException(e.getMessage(), e);
 		}
 	}
-	
+
 	public void close() {
 		reloadable = false;
-		
-		if(client != null && client.isConnected())
+
+		if (client != null && client.isConnected())
 			client.close();
 	}
-	
+
 	public void load(String config) throws ConfigurationRuntimeException {
 		load(new StringReader(config), false);
 	}
-	
+
 	/**
-	 * 加载配置文件
-	 * 
+	 * 加载配置文件，初次初始化加载为false，服务端推送加载为true。
 	 * @param in
-	 * @param reload 初次初始化加载为false，服务端推送加载为true。
+	 * @param reload      
 	 * @throws Exception
 	 */
 	public void load(Reader in, boolean reload) throws ConfigurationRuntimeException {
 		Map<String, String> tmpStore = new LinkedHashMap<String, String>();
-		
 		PropertiesReader reader = new PropertiesReader(in);
 		try {
 			while (reader.nextProperty()) {
 				String key = reader.getPropertyName();
 				String value = reader.getPropertyValue();
 				tmpStore.put(key, value);
-				if(reload) {
+				if (reload) {
 					String oldValue = store.remove(key);
-					if(oldValue == null)
+					if (oldValue == null)
 						fireEvent(EventType.ADD, key, value);
-					else if(!oldValue.equals(value)) 
+					else if (!oldValue.equals(value))
 						fireEvent(EventType.UPDATE, key, value);
 				}
 			}
-			
-			if(reload) {
-				for(String key : store.keySet()) {
+
+			if (reload) {
+				for (String key : store.keySet()) {
 					fireEvent(EventType.CLEAR, key, store.get(key));
 				}
 			}
@@ -236,85 +186,80 @@ public class PropertiesConfiguration extends EventSource {
 			try {
 				reader.close();
 			} catch (IOException e) {
-				;
+				
 			}
 		}
-		
-		if(store != null)
-			store.clear();
-		
+
+		if (store != null) store.clear();
 		store = tmpStore;
 	}
-	
+
 	public static String getProjCode() {
-		if(StringUtils.isNotBlank(projCode))
-			return projCode;
-		
+		if (StringUtils.isNotBlank(projCode)) return projCode;
+
 		projCode = System.getenv("SUPERDIAMOND_PROJCODE");
-		if(StringUtils.isBlank(projCode)) {
+		if (StringUtils.isBlank(projCode)) {
 			return System.getProperty("superdiamond.projcode");
 		} else {
 			return projCode;
 		}
 	}
-	
+
 	public static String getProfile() {
-		if(StringUtils.isNotBlank(profile))
+		if (StringUtils.isNotBlank(profile))
 			return profile;
-		
+
 		profile = System.getenv("SUPERDIAMOND_PROFILE");
-		if(StringUtils.isBlank(profile)) {
+		if (StringUtils.isBlank(profile)) {
 			return System.getProperty("superdiamond.profile", "development");
 		} else {
 			return profile;
 		}
 	}
-	
+
 	public static String getModules() {
-		if(StringUtils.isNotBlank(modules))
+		if (StringUtils.isNotBlank(modules))
 			return modules;
-		
+
 		modules = System.getenv("SUPERDIAMOND_MODULES");
-		if(StringUtils.isBlank(modules)) {
+		if (StringUtils.isBlank(modules)) {
 			return System.getProperty("superdiamond.modules");
 		} else {
 			return modules;
 		}
 	}
-	
+
 	public static String getHost() {
-		if(StringUtils.isNotBlank(host))
+		if (StringUtils.isNotBlank(host))
 			return host;
-		
+
 		host = System.getenv("SUPERDIAMOND_HOST");
-		if(StringUtils.isBlank(host)) {
+		if (StringUtils.isBlank(host)) {
 			return System.getProperty("superdiamond.host", "localhost");
 		} else {
 			return host;
 		}
 	}
-	
+
 	public static int getPort() {
-		if(port > 1)
+		if (port > 1)
 			return port;
-			
-		if(StringUtils.isBlank(System.getenv("SUPERDIAMOND_PORT"))) {
+
+		if (StringUtils.isBlank(System.getenv("SUPERDIAMOND_PORT"))) {
 			return Integer.valueOf(System.getProperty("superdiamond.port", "8283"));
 		} else {
 			return Integer.valueOf(System.getenv("SUPERDIAMOND_PORT"));
 		}
 	}
-	
-	// --------------------------------------------------------------------
-	
+
 	private String getProperty(String key) {
 		return store.get(key);
 	}
-	
+
 	public Properties getProperties() {
 		Properties properties = new Properties();
-		
-		for(String key : store.keySet()) {
+
+		for (String key : store.keySet()) {
 			properties.setProperty(key, getString(key));
 		}
 		return properties;
@@ -330,8 +275,7 @@ public class PropertiesConfiguration extends EventSource {
 	}
 
 	public boolean getBoolean(String key, boolean defaultValue) {
-		return getBoolean(key, BooleanUtils.toBooleanObject(defaultValue))
-				.booleanValue();
+		return getBoolean(key, BooleanUtils.toBooleanObject(defaultValue)).booleanValue();
 	}
 
 	public Boolean getBoolean(String key, Boolean defaultValue) {
@@ -380,8 +324,7 @@ public class PropertiesConfiguration extends EventSource {
 		if (d != null) {
 			return d.doubleValue();
 		} else {
-			throw new NoSuchElementException('\'' + key
-					+ "' doesn't map to an existing object");
+			throw new NoSuchElementException('\'' + key + "' doesn't map to an existing object");
 		}
 	}
 
@@ -542,16 +485,14 @@ public class PropertiesConfiguration extends EventSource {
 	}
 
 	protected ConfigurationInterpolator createInterpolator() {
-        ConfigurationInterpolator interpol = new ConfigurationInterpolator();
-        interpol.setDefaultLookup(new StrLookup()
-        {
-            @Override
-            public String lookup(String var)
-            {
-            	String prop = getProperty(var);
-                return (prop != null) ? prop : null;
-            }
-        });
-        return interpol;
-    }
+		ConfigurationInterpolator interpol = new ConfigurationInterpolator();
+		interpol.setDefaultLookup(new StrLookup() {
+			@Override
+			public String lookup(String var) {
+				String prop = getProperty(var);
+				return (prop != null) ? prop : null;
+			}
+		});
+		return interpol;
+	}
 }

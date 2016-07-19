@@ -8,5 +8,7 @@ package com.github.diamond.client.event;
  * @author bsli@ustcinfo.com
  */
 public enum EventType {
-	ADD, UPDATE, CLEAR;
+	ADD,   
+	UPDATE, 
+	CLEAR;
 }

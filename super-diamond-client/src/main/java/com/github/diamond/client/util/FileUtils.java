@@ -11,8 +11,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
- * Create on @2013-8-26 @下午4:59:50 
- * @author bsli@ustcinfo.com
+ * 
  */
 public class FileUtils {
 	

@@ -7,7 +7,6 @@ import org.springframework.util.Assert;
 import java.util.*;
 
 /**
- * 
  * @author yanweiqi
  */
 public class PropertiesConfigurationFactoryBean implements FactoryBean<Properties> {
@@ -23,34 +22,6 @@ public class PropertiesConfigurationFactoryBean implements FactoryBean<Propertie
 	public PropertiesConfigurationFactoryBean(List<ConfigurationListener> listeners) {
 		init = true;
 		configuration = new PropertiesConfiguration();
-
-		if (listeners != null) {
-			for (ConfigurationListener listener : listeners) {
-				configuration.addConfigurationListener(listener);
-			}
-		}
-	}
-
-	/**
-	 * 构造函数
-	 * @param projCode
-	 * @param profile
-	 * @param modules
-	 */
-	public PropertiesConfigurationFactoryBean(final String projCode, final String profile, final String modules) {
-		this(projCode, profile, modules, null);
-	}
-
-	/**
-	 * 构造函数
-	 * @param projCode
-	 * @param profile
-	 * @param modules
-	 * @param listeners
-	 */
-	public PropertiesConfigurationFactoryBean(final String projCode, final String profile, final String modules, List<ConfigurationListener> listeners) {
-		init = true;
-		configuration = new PropertiesConfiguration(projCode, profile);
 
 		if (listeners != null) {
 			for (ConfigurationListener listener : listeners) {
@@ -83,7 +54,6 @@ public class PropertiesConfigurationFactoryBean implements FactoryBean<Propertie
 	public PropertiesConfigurationFactoryBean(String host, int port, final String projCode, final String profile, final String modules, List<ConfigurationListener> listeners) {
 		init = true;
 		configuration = new PropertiesConfiguration(host, port, projCode, profile, modules);
-
 		if (listeners != null) {
 			for (ConfigurationListener listener : listeners) {
 				configuration.addConfigurationListener(listener);

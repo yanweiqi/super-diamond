@@ -69,15 +69,10 @@ public class Netty4Client {
 		this.channelInitializer = channelInitializer;
 
 		try {
-            doOpen();
-        } catch (Throwable t) {
-            close();
-            throw new Exception("Failed to start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + host + ", cause: " + t.getMessage(), t);
-        }
-        try {
             connect();
             logger.info("Start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + host);
-        } catch (Throwable t){
+        } catch (Throwable t) {
+            close();
             throw new Exception("Failed to start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + host + ", cause: " + t.getMessage(), t);
         }
     }
@@ -94,44 +89,34 @@ public class Netty4Client {
 		return channelInitializer.getClientHandler().getMessage(timeout);
 	}
     
-    private void doOpen() throws Throwable {
-    	bootstrap = new Bootstrap();
-    	
-    	bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
-    	bootstrap.option(ChannelOption.TCP_NODELAY, true);
-
-    	bootstrap.group(group)
-     	.channel(NioSocketChannel.class)
-     	.handler(channelInitializer);
-    }
-    
+    /**
+     * 执行连接
+     * @throws Throwable
+     */
     private void doConnect() throws Throwable {
         long start = System.currentTimeMillis();
+    	bootstrap = new Bootstrap();
+    	bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+    	bootstrap.option(ChannelOption.TCP_NODELAY, true);
+    	bootstrap.group(group).channel(NioSocketChannel.class).handler(channelInitializer);
         future = bootstrap.connect(getConnectAddress());
-        try{
-            boolean ret = future.awaitUninterruptibly(getConnectTimeout(), TimeUnit.MILLISECONDS);
-            
+        try {
+        	boolean ret = future.awaitUninterruptibly(getConnectTimeout(), TimeUnit.MILLISECONDS);
             if (ret && future.isSuccess()) {
                 Channel newChannel = future.sync().channel();
-                
                 try {
-                    // 关闭旧的连接
-                    Channel oldChannel = Netty4Client.this.channel;
+                    Channel oldChannel = this.channel; 
                     if (oldChannel != null) {
                         logger.info("Close old netty channel " + oldChannel + " on create new netty channel " + newChannel);
-                        oldChannel.close();
+                        oldChannel.close();   // 关闭旧的连接
                     }
                 } finally {
-                	Netty4Client.this.channel = newChannel;
+                	this.channel = newChannel;
                 }
             } else if (future.cause() != null) {
-                throw new Exception("client failed to connect to server "
-                        + getRemoteAddress() + ", error message is:" + future.cause().getMessage(), future.cause());
+                throw new Exception("client failed to connect to server "+ getRemoteAddress() + ", error message is:" + future.cause().getMessage(), future.cause());
             } else {
-                throw new Exception("client failed to connect to server "
-                        + getRemoteAddress() + " client-side timeout "
-                        + getConnectTimeout() + "ms (elapsed: " + (System.currentTimeMillis() - start) + "ms) from netty client "
-                        + NetUtils.getLocalHost());
+                throw new Exception("client failed to connect to server "+ getRemoteAddress() + " client-side timeout "+ getConnectTimeout() + "ms (elapsed: " + (System.currentTimeMillis() - start) + "ms) from netty client "+ NetUtils.getLocalHost());
             }
         }finally{
             if (! isConnected()) {
@@ -142,6 +127,7 @@ public class Netty4Client {
     
     private void connect() throws Exception {
         try {
+        	
             if (isConnected()) {
                 return;
             }
@@ -188,18 +174,28 @@ public class Netty4Client {
         }
     }
     
+    /**
+     * 检测是否连接
+     * @return
+     */
     public boolean isConnected() {
-        if (channel == null)
-            return false;
-        return channel.isActive();
+        if (channel != null){
+        	return channel.isActive();
+        } else {
+        	return false;
+        }
     }
     
+    /**
+     * 周期性检测
+     */
     private synchronized void initConnectStatusCheckCommand(){
         if(reconnectExecutorFuture == null || reconnectExecutorFuture.isCancelled()){
             Runnable connectStatusCheckCommand =  new Runnable() {
                 public void run() {
                     try {
-                        if (! isConnected()) {
+                    	logger.info("检测连接是否还存在："+isConnected());
+                        if (! isConnected()) {   //如果不存在就从新连接。
                             connect();
                         } else {
                             lastConnectedTime = System.currentTimeMillis();
